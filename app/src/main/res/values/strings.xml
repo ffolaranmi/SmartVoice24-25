@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">SmartVoice</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="help">Find Medical Help</string>
+    <string name="what_is_smartvoice">What is SmartVoice?</string>
+    <string name="record">Record</string>
+    <string name="play_voice_sample">Play voice sample</string>
+    <string name="history">History</string>
+    <string name="register">Register a new account</string>
+    <string name="login">Login to your account</string>
+    <string name="account_information">Account Information</string>
+    <string name="logout">Logout of your account</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
+    <string name="stop_recording">stop recording</string>
+</resources>
