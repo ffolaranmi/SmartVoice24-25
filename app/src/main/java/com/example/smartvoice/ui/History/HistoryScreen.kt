@@ -1,12 +1,15 @@
 package com.example.smartvoice.ui.History
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,6 +20,13 @@ import com.example.smartvoice.SmartVoiceTopAppBar
 import com.example.smartvoice.data.Classification
 import com.example.smartvoice.ui.AppViewModelProvider
 import com.example.smartvoice.ui.navigation.NavigationDestination
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.clickable
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.material.AlertDialog
+
 
 object HistoryDestination : NavigationDestination {
     override val route = "History"
@@ -64,31 +74,58 @@ private fun HistoryBody(
     }
 }
 
-
 @Composable
 private fun VoiceSampleCard(
-     createdAt: String,
-     classification: Classification
-){
-    Card(modifier = Modifier.padding(8.dp), elevation = 4.dp) {
+    createdAt: String,
+    classification: Classification
+) {
+    var showDialog = remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { showDialog.value = true },
+        elevation = 4.dp
+    ) {
         Column {
             Text(
-                text = "Voice Sample " + createdAt,
+                text = "Voice Sample $createdAt",
                 modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.h6
             )
-            Text(text = classification.toString(),
-                modifier = Modifier.padding(16.dp),
+            Text(
+                text = classification.toString(),
+                modifier = Modifier.padding(16.dp)
             )
         }
     }
+
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = { Text("Results") },
+            text = {
+                Text(
+                    if (classification == Classification.PROCESSED)
+                        "You are at low risk of having RRP."
+                    else
+                        "Your results are still being processed, please check back at a later date."
+                ) },
+            confirmButton = {
+                Button(onClick = { showDialog.value = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
+
 
 private data class VoiceSampleHeader(val createdAt: String, val classification: Classification)
 
 // Temporary data entries
 private val VoiceSampleList = listOf(
-    VoiceSampleHeader(createdAt = "yyyy-MM-dd kk:mm:ss", classification = Classification.PROCESSING),
-    VoiceSampleHeader(createdAt = "yyyy-MM-dd kk:mm:ss", classification = Classification.PROCESSING),
-    VoiceSampleHeader(createdAt = "yyyy-MM-dd kk:mm:ss", classification = Classification.PROCESSING),
+    VoiceSampleHeader(createdAt = "2024-07-12 20:37:28", classification = Classification.PROCESSED),
+    VoiceSampleHeader(createdAt = "2025-01-15 13:24:29", classification = Classification.PROCESSING),
+    VoiceSampleHeader(createdAt = "2025-02-12 16:27:11", classification = Classification.PROCESSING),
 )
