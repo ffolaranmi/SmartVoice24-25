@@ -11,7 +11,8 @@ enum class Classification {
     STRUCTURAL,
     NEUROLOGICAL,
     OTHER,
-    PROCESSING
+    PROCESSING,
+    PROCESSED
 }
 
 @Entity(tableName = "voiceSample")
@@ -22,5 +23,6 @@ data class VoiceSample(
     val fileLocation: String,
     @ColumnInfo(name = "created_at")
     val createdAt: Long,
-    val classification: Classification
+    val classification: Classification,
+    var isClicked: Boolean = false
 )
