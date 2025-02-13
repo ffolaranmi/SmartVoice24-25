@@ -40,7 +40,13 @@ fun LoginScreen(
 private fun LoginBody(
     onScreenOptionClick: (NavigationDestination) -> Unit,
     modifier: Modifier = Modifier
+     viewModel: LoginViewModel
 ){
+    val users = viewModel.users
+    var expanded by remember { mutableStateOf(false) }
+
+
+    
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -60,11 +66,60 @@ private fun LoginBody(
         }
         Button(onClick = { },
             modifier = modifier.widthIn(min = 300.dp)
-        ) {
+        ) 
+        {
             Text(
                 text = stringResource(id = R.string.register),
                 style = MaterialTheme.typography.h6,
             )
         }
+
+        // Dropdown for user selection
+        Box(modifier = modifier.widthIn(min = 300.dp)) {
+            Button(onClick = { expanded = true }) {
+                Text(
+                    text = viewModel.selectedUser.ifEmpty { "Select User" },
+                    style = MaterialTheme.typography.h6
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = modifier.widthIn(min = 300.dp)
+            ) {
+                users.forEach { user ->
+                    DropdownMenuItem(onClick = {
+                        viewModel.selectUser(user)
+                        expanded = false
+                    }) {
+                        Text(text = user)
+
+
+                    Spacer(modifier = modifier.height(16.dp))
+
+        // Login Button
+        Button(
+            onClick = {
+                if (viewModel.selectedUser.isNotEmpty()) {
+                    onScreenOptionClick(HomeDestination)
+                }
+            },
+            modifier = modifier.widthIn(min = 300.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.login),
+                style = MaterialTheme.typography.h6
+            )
+        }
+
+        Spacer(modifier = modifier.height(8.dp))
+
+        // Register Button
+        Button(
+            onClick = { /* Handle registration */ },
+        
     }
 }
+            }
+            }
+            }
