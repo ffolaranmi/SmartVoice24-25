@@ -62,7 +62,8 @@ private fun LoginBody(
             onValueChange = { email = it },
             label = { Text("Email") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            isError = email.isNotEmpty() && !email.contains("@")
         )
 
         OutlinedTextField(
@@ -71,7 +72,8 @@ private fun LoginBody(
             label = { Text("Password") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            isError = password.isNotEmpty() && password.length < 6
         )
 
         if (errorMessage.isNotEmpty()) {
@@ -81,10 +83,10 @@ private fun LoginBody(
 
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    onScreenOptionClick(HomeDestination) // Navigate to Home
-                } else {
-                    errorMessage = "Please enter valid email and password"
+                when {
+                    !email.contains("@") -> errorMessage = "Invalid email! Must contain '@'"
+                    password.length < 6 -> errorMessage = "Password must be at least 6 characters"
+                    else -> onScreenOptionClick(HomeDestination) // Navigate if valid
                 }
             },
             modifier = Modifier
@@ -97,16 +99,12 @@ private fun LoginBody(
             )
         }
 
-        Button(
-            onClick = { /* TODO: Implement Register Navigation */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.register),
-                style = MaterialTheme.typography.h6,
-            )
-        }
+        // Removed the Register button and its related code
     }
+}
+
+// Define the NavigationDestination interface
+interface NavigaonDestination {
+    val route: String
+    val titleRes: Int
 }
