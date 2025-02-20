@@ -124,8 +124,18 @@ private fun VoiceSampleCard(
 private data class VoiceSampleHeader(val createdAt: String, val classification: Classification)
 
 // Temporary data entries
-private val VoiceSampleList = listOf(
+private val VoiceSampleList = mutableListOf(
     VoiceSampleHeader(createdAt = "2024-07-12 20:37:28", classification = Classification.PROCESSED),
     VoiceSampleHeader(createdAt = "2025-01-15 13:24:29", classification = Classification.PROCESSING),
     VoiceSampleHeader(createdAt = "2025-02-12 16:27:11", classification = Classification.PROCESSING),
 )
+
+// Add a new voice record
+fun addVoiceSample() {
+    VoiceSampleList.add(
+        VoiceSampleHeader(
+            createdAt = "2025-03-01 10:00:00",
+            classification = Classification.PROCESSED
+        )
+    )
+}
