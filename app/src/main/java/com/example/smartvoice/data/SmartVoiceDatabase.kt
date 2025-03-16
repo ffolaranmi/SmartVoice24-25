@@ -1,11 +1,11 @@
 package com.example.smartvoice.data
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-//creates an instance of the entities created in diagnosis and user tables
-@Database(entities = [User::class, DiagnosisTable::class], version = 3)
+@Database(entities = [User::class, DiagnosisTable::class], version = 4, exportSchema = false)
 abstract class SmartVoiceDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun diagnosisDao(): DiagnosisDao
@@ -19,7 +19,6 @@ abstract class SmartVoiceDatabase : RoomDatabase() {
                 instance ?: buildDatabase(context).also { instance = it }
             }
         }
-
 
         private fun buildDatabase(context: Context): SmartVoiceDatabase {
             return Room.databaseBuilder(

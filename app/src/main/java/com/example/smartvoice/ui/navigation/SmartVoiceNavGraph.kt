@@ -6,71 +6,80 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.smartvoice.SmartVoiceApplication
-import com.example.smartvoice.data.DiagnosisDao
+import com.example.smartvoice.data.SmartVoiceDatabase
 import com.example.smartvoice.ui.AppViewModelProvider
-import com.example.smartvoice.ui.History.HistoryDestination
 import com.example.smartvoice.ui.History.HistoryScreen
 import com.example.smartvoice.ui.about.AboutScreen
-import com.example.smartvoice.ui.about.AboutDestination
-import com.example.smartvoice.ui.home.HomeDestination
 import com.example.smartvoice.ui.home.HomeScreen
-import com.example.smartvoice.ui.login.LoginDestination
 import com.example.smartvoice.ui.login.LoginScreen
-import com.example.smartvoice.ui.record.RecordDestination
 import com.example.smartvoice.ui.record.RecordScreen
-import com.example.smartvoice.ui.AppViewModelProvider.Factory
-//import com.example.smartvoice.com.example.smartvoice.MainActivity
+import com.example.smartvoice.ui.register.RegisterScreen
 
-/**
- * Provides Navigation graph for the application.
- */
 @Composable
 fun SmartVoiceNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier,
+    application: SmartVoiceApplication,
+    database: SmartVoiceDatabase, // ✅ Ensure database is passed
+    modifier: Modifier = Modifier
 ) {
-    //val smartVoiceDatabase = com.example.smartvoice.MainActivity.getSmartVoiceDatabase()
-    //val diagnosisDao: DiagnosisDao = smartVoiceDatabase.diagnosisDao()
-
-    NavHost(navController = navController,
-        startDestination = LoginDestination.route,
-        modifier = modifier)
-    {
-        composable(route = LoginDestination.route) { destination ->
+    NavHost(
+        navController = navController,
+        startDestination = "login",
+        modifier = modifier
+    ) {
+        // ✅ LOGIN SCREEN
+        composable("login") {
             LoginScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}") },
-                viewModelFactory = AppViewModelProvider.Factory(application = SmartVoiceApplication())
+                navigateToScreenOption = { navController.navigate("home") },
+                navigateToRegister = { navController.navigate("register") },
+                application = application, // ✅ Fix: Only pass application
+                database = application.smartVoiceDatabase
             )
         }
-        composable(route = HomeDestination.route) {
-            HomeScreen(
 
-                navigateToScreenOption = { navController.navigate("${it.route}") },
+        // ✅ REGISTER SCREEN
+        composable("register") {
+            RegisterScreen(
+                navigateToLogin = { navController.navigate("login") },
+                application = application,
+                database = database
+            )
+        }
+
+        // ✅ HOME SCREEN
+        composable("home") {
+            HomeScreen(
+                navigateToScreenOption = { navController.navigate(it.route) },
                 navigateToLogin = {
-                    navController.navigate(LoginDestination.route) {
-                        popUpTo(HomeDestination.route) { inclusive = true } // ✅ Clears backstack
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
                     }
                 },
-                viewModelFactory = AppViewModelProvider.Factory(application = SmartVoiceApplication())
+                viewModelFactory = AppViewModelProvider.Factory(application) // ✅ Ensure ViewModelFactory uses database
             )
         }
 
-        composable(route = HistoryDestination.route) {
+        // ✅ HISTORY SCREEN
+        composable("history") {
             HistoryScreen(
                 navigateBack = { navController.popBackStack() },
-                viewModelFactory = AppViewModelProvider.Factory(application = SmartVoiceApplication())
+                viewModelFactory = AppViewModelProvider.Factory(application)
             )
         }
-        composable(route = RecordDestination.route) { destination ->
+
+        // ✅ RECORD SCREEN
+        composable("record") {
             RecordScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}") },
+                navigateToScreenOption = { navController.navigate(it.route) },
                 navigateBack = { navController.popBackStack() },
-                viewModelFactory = AppViewModelProvider.Factory(application = SmartVoiceApplication()),
+                viewModelFactory = AppViewModelProvider.Factory(application)
             )
         }
-        composable(route = AboutDestination.route) {
+
+        // ✅ ABOUT SCREEN
+        composable("about") {
             AboutScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}") },
+                navigateToScreenOption = { navController.navigate(it.route) },
                 navigateBack = { navController.popBackStack() }
             )
         }

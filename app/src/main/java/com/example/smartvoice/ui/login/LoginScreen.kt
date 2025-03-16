@@ -10,27 +10,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartvoice.R
+import com.example.smartvoice.SmartVoiceApplication
+import com.example.smartvoice.data.SmartVoiceDatabase
 import com.example.smartvoice.ui.AppViewModelProvider
 import com.example.smartvoice.ui.home.HomeDestination
-import com.example.smartvoice.ui.navigation.NavigationDestination
-
-object LoginDestination : NavigationDestination {
-    override val route = "login"
-    override val titleRes = R.string.app_name
-}
+import com.example.smartvoice.ui.register.RegisterDestination
 
 @Composable
 fun LoginScreen(
-    navigateToScreenOption: (NavigationDestination) -> Unit,
+    navigateToScreenOption: (String) -> Unit,
+    navigateToRegister: () -> Unit,
+    application: SmartVoiceApplication,
+    database: SmartVoiceDatabase, // ✅ Fix: Pass database
     modifier: Modifier = Modifier,
-    viewModelFactory: ViewModelProvider.Factory, // Provide ViewModel factory
+    viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory(application))
 ) {
     Scaffold { innerPadding ->
         LoginBody(
-            onScreenOptionClick = navigateToScreenOption,
+            onLoginSuccess = { navigateToScreenOption("home") }, // ✅ Fix: Pass correct route
+            onRegisterClick = navigateToRegister,
+            viewModel = viewModel,
             modifier = modifier.padding(innerPadding)
         )
     }
@@ -38,7 +39,9 @@ fun LoginScreen(
 
 @Composable
 private fun LoginBody(
-    onScreenOptionClick: (NavigationDestination) -> Unit,
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    viewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -58,7 +61,6 @@ private fun LoginBody(
             modifier = Modifier.padding(24.dp)
         )
 
-        // Email Input
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -68,7 +70,6 @@ private fun LoginBody(
             isError = email.isNotEmpty() && !email.contains("@")
         )
 
-        // Password Input
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -79,24 +80,22 @@ private fun LoginBody(
             isError = password.isNotEmpty() && password.length < 6
         )
 
-        // Display Error Message (if any)
         if (errorMessage.isNotEmpty()) {
             Text(text = errorMessage, color = MaterialTheme.colors.error)
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        // Login Button
         Button(
             onClick = {
-                when {
-                    !email.contains("@") -> errorMessage = "Invalid email! Must contain '@'"
-                    password.length < 6 -> errorMessage = "Password must be at least 6 characters"
-                    else -> onScreenOptionClick(HomeDestination) // Navigate if valid
+                viewModel.loginUser(email, password) { isSuccess ->
+                    if (isSuccess) {
+                        onLoginSuccess() // ✅ Redirect to Home
+                    } else {
+                        errorMessage = "Invalid email or password. Please try again."
+                    }
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.login),
@@ -104,9 +103,8 @@ private fun LoginBody(
             )
         }
 
-        // Register Button (Placeholder)
         Button(
-            onClick = { /* Handle registration logic */ },
+            onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             Text(

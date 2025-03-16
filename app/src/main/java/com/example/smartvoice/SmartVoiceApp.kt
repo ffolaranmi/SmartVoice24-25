@@ -12,13 +12,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.smartvoice.ui.navigation.SmartVoiceNavHost
+import com.example.smartvoice.data.SmartVoiceDatabase
 
 /**
  * Top level composable that represents screens for the application.
  */
 @Composable
-fun SmartVoiceApp(navController: NavHostController = rememberNavController()) {
-    SmartVoiceNavHost(navController = navController)
+fun SmartVoiceApp(
+    application: SmartVoiceApplication,
+    database: SmartVoiceDatabase, // ✅ Ensure database is passed
+    navController: NavHostController = rememberNavController()
+) {
+    SmartVoiceNavHost(
+        navController = navController,
+        application = application,
+        database = database // ✅ Fix: Pass database
+    )
 }
 
 /**

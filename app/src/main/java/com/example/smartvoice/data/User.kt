@@ -9,5 +9,7 @@ data class User(
     val chinum: String,
     val patientName: String,
     val age: Int,
-    val currentstatus: String
-    )
+    val currentstatus: String,
+    val email: String,   // ✅ Store email
+    val password: String // ✅ Store password
+)
