@@ -26,8 +26,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.AlertDialog
-
-
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.ViewModel
+import com.example.smartvoice.ui.viewModel.UserSessionViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 object HistoryDestination : NavigationDestination {
     override val route = "History"
     override val titleRes = R.string.history
@@ -35,30 +39,33 @@ object HistoryDestination : NavigationDestination {
 
 @Composable
 fun HistoryScreen(
-    modifier: Modifier = Modifier,
-    viewModel: HistoryViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navigateBack: () -> Unit,
-){
-    //val historyUiState by viewModel.historyUiState.collectAsState()
+    userSessionViewModel: UserSessionViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateBack: () -> Unit
+) {
+    val userEmail = userSessionViewModel.email.collectAsState().value  // Fix error
+
     Scaffold(
         topBar = {
             SmartVoiceTopAppBar(
-                title = stringResource(id = HistoryDestination.titleRes),
+                title = "History",
                 canNavigateBack = true,
-                navigateUp = navigateBack,
+                navigateUp = navigateBack
             )
         }
-    ) { innerpadding ->
+    ) { innerPadding ->
         HistoryBody(
-            modifier = modifier.padding(innerpadding)
+            nameOfUser = userEmail,  // Pass user email
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }
 
+
 @Composable
 private fun HistoryBody(
+    nameOfUser: String, // Receive the user's email
     modifier: Modifier = Modifier
-){
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -68,7 +75,11 @@ private fun HistoryBody(
     ) {
         Column {
             VoiceSampleList.forEach {
-                VoiceSampleCard(createdAt = it.createdAt, classification = it.classification)
+                VoiceSampleCard(
+                    nameOfUser = nameOfUser, // Use user's email instead of "Rory"
+                    createdAt = it.createdAt,
+                    classification = it.classification
+                )
             }
         }
     }
@@ -76,6 +87,7 @@ private fun HistoryBody(
 
 @Composable
 private fun VoiceSampleCard(
+    nameOfUser: String,  // Add nameOfUser parameter
     createdAt: String,
     classification: Classification
 ) {
@@ -87,15 +99,17 @@ private fun VoiceSampleCard(
             .clickable { showDialog.value = true },
         elevation = 4.dp
     ) {
-        Column {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "User: $nameOfUser",  // Display user name
+                style = MaterialTheme.typography.subtitle1
+            )
             Text(
                 text = "Voice Sample $createdAt",
-                modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = classification.toString(),
-                modifier = Modifier.padding(16.dp)
+                text = classification.toString()
             )
         }
     }
@@ -103,14 +117,15 @@ private fun VoiceSampleCard(
     if (showDialog.value) {
         AlertDialog(
             onDismissRequest = { showDialog.value = false },
-            title = { Text("Results") },
+            title = { Text("Results for $nameOfUser") },  // Include name in the dialog title
             text = {
                 Text(
                     if (classification == Classification.PROCESSED)
-                        "You are at low risk of having RRP."
+                        "$nameOfUser, you are at low risk of having RRP."
                     else
-                        "Your results are still being processed, please check back at a later date."
-                ) },
+                        "Your results are still being processed, please check back later."
+                )
+            },
             confirmButton = {
                 Button(onClick = { showDialog.value = false }) {
                     Text("OK")
@@ -121,21 +136,22 @@ private fun VoiceSampleCard(
 }
 
 
-private data class VoiceSampleHeader(val createdAt: String, val classification: Classification)
+
+private data class VoiceSampleHeader(val nameOfUser: String, val createdAt: String, val classification: Classification)
 
 // Temporary data entries
 private val VoiceSampleList = mutableListOf(
-    VoiceSampleHeader(createdAt = "2024-07-12 20:37:28", classification = Classification.PROCESSED),
-    VoiceSampleHeader(createdAt = "2025-01-15 13:24:29", classification = Classification.PROCESSING),
-    VoiceSampleHeader(createdAt = "2025-02-12 16:27:11", classification = Classification.PROCESSING),
+    VoiceSampleHeader(nameOfUser = "Rory", createdAt = "2024-07-12 20:37:28", classification = Classification.PROCESSED),
+    VoiceSampleHeader(nameOfUser = "Rory", createdAt = "2025-01-15 13:24:29", classification = Classification.PROCESSING),
+    VoiceSampleHeader(nameOfUser = "Rory", createdAt = "2025-02-12 16:27:11", classification = Classification.PROCESSING),
 )
 
 // Add a new voice record
-fun addVoiceSample() {
-    VoiceSampleList.add(
-        VoiceSampleHeader(
-            createdAt = "2025-03-01 10:00:00",
-            classification = Classification.PROCESSED
-        )
-    )
-}
+///fun addVoiceSample() {
+///    VoiceSampleList.add(
+///        VoiceSampleHeader(
+ ///           createdAt = "2025-03-01 10:00:00",
+ ///           classification = Classification.PROCESSED
+ ///       )
+///    )
+///}

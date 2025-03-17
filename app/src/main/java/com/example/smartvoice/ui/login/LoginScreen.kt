@@ -10,11 +10,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartvoice.R
-import com.example.smartvoice.ui.AppViewModelProvider
 import com.example.smartvoice.ui.home.HomeDestination
 import com.example.smartvoice.ui.navigation.NavigationDestination
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import com.example.smartvoice.ui.viewModel.UserSessionViewModel
+
+//class UserSessionViewModel : ViewModel() {
+ //   private val _email = MutableStateFlow("")
+ //   val email: StateFlow<String> = _email
+
+  //  fun setEmail(newEmail: String) {
+   //     _email.value = newEmail
+ //   }
+//}
+
+object AppViewModelProvider {
+    val Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return when {
+                modelClass.isAssignableFrom(UserSessionViewModel::class.java) -> UserSessionViewModel() as T
+                else -> throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
+}
+
 
 object LoginDestination : NavigationDestination {
     override val route = "login"
@@ -25,11 +50,12 @@ object LoginDestination : NavigationDestination {
 fun LoginScreen(
     navigateToScreenOption: (NavigationDestination) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userSessionViewModel: UserSessionViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Scaffold { innerPadding ->
         LoginBody(
             onScreenOptionClick = navigateToScreenOption,
+            userSessionViewModel = userSessionViewModel,
             modifier = modifier.padding(innerPadding)
         )
     }
@@ -38,6 +64,7 @@ fun LoginScreen(
 @Composable
 private fun LoginBody(
     onScreenOptionClick: (NavigationDestination) -> Unit,
+    userSessionViewModel: UserSessionViewModel,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -82,31 +109,15 @@ private fun LoginBody(
         Button(
             onClick = {
                 if (email.isNotBlank() && password.isNotBlank()) {
+                    userSessionViewModel.setEmail(email) // Save email globally
                     onScreenOptionClick(HomeDestination) // Navigate to Home
                 } else {
-                    errorMessage = "Please enter valid email and password"
+                    errorMessage = "Please enter a valid email and password"
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
-            Text(
-                text = stringResource(id = R.string.login),
-                style = MaterialTheme.typography.h6,
-            )
-        }
-
-        Button(
-            onClick = { /* TODO: Implement Register Navigation */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.register),
-                style = MaterialTheme.typography.h6,
-            )
+            Text(text = stringResource(id = R.string.login), style = MaterialTheme.typography.h6)
         }
     }
 }

@@ -23,6 +23,8 @@ import com.example.smartvoice.ui.accountInfo.ACIDestination
 import com.example.smartvoice.ui.accountInfo.ACIScreen
 import com.example.recordscreen.RecordScreen
 import com.example.recordscreen.RecordDestination
+import com.example.smartvoice.ui.viewModel.UserSessionViewModel
+
 
 /**
  * Provides Navigation graph for the application.
@@ -31,52 +33,48 @@ import com.example.recordscreen.RecordDestination
 @Composable
 fun SmartVoiceNavHost(
     navController: NavHostController,
+    userSessionViewModel: UserSessionViewModel, // ✅ Receive ViewModel as a parameter
     modifier: Modifier = Modifier,
 ) {
-    NavHost(navController = navController,
+    NavHost(
+        navController = navController,
         startDestination = LoginDestination.route,
-        modifier = modifier)
-    {
+        modifier = modifier
+    ) {
         composable(route = LoginDestination.route) {
             LoginScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}") }
-            )
-        }
-        composable(route = HomeDestination.route) {
-            HomeScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}") }
+                userSessionViewModel = userSessionViewModel, // ✅ Pass ViewModel
+                navigateToScreenOption = { navController.navigate(it.route) }
             )
         }
         composable(route = HistoryDestination.route) {
             HistoryScreen(
-                navigateBack = { navController.popBackStack() },
+                userSessionViewModel = userSessionViewModel, // ✅ Pass ViewModel
+                navigateBack = { navController.popBackStack() }
             )
         }
-
         composable(route = RecordDestination.route) {
             RecordScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}")},
-                navigateBack = { navController.popBackStack() },
+                navigateToScreenOption = { navController.navigate(it.route) },
+                navigateBack = { navController.popBackStack() }
             )
         }
-
-
         composable(route = HelpDestination.route) {
             HelpScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}")},
-                navigateBack = { navController.popBackStack() },
+                navigateToScreenOption = { navController.navigate(it.route) },
+                navigateBack = { navController.popBackStack() }
             )
         }
         composable(route = WhatDestination.route) {
             WhatScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}")},
-                navigateBack = { navController.popBackStack() },
+                navigateToScreenOption = { navController.navigate(it.route) },
+                navigateBack = { navController.popBackStack() }
             )
         }
         composable(route = ACIDestination.route) {
             ACIScreen(
-                navigateToScreenOption = { navController.navigate("${it.route}")},
-                navigateBack = { navController.popBackStack() },
+                navigateToScreenOption = { navController.navigate(it.route) },
+                navigateBack = { navController.popBackStack() }
             )
         }
     }

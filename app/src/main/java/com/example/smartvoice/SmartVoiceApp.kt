@@ -12,13 +12,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.smartvoice.ui.navigation.SmartVoiceNavHost
+import com.example.smartvoice.ui.viewModel.UserSessionViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
  * Top level composable that represents screens for the application.
  */
+//@Composable
+//fun SmartVoiceApp(navController: NavHostController = rememberNavController()) {
+//    SmartVoiceNavHost(navController = navController)
+//}
+
 @Composable
-fun SmartVoiceApp(navController: NavHostController = rememberNavController()) {
-    SmartVoiceNavHost(navController = navController)
+fun SmartVoiceApp() {
+    val navController = rememberNavController()
+
+    // Create the ViewModel at the app level
+    val userSessionViewModel: UserSessionViewModel = viewModel()
+
+    SmartVoiceNavHost(
+        navController = navController,
+        userSessionViewModel = userSessionViewModel // ✅ Pass ViewModel to NavHost
+    )
 }
 
 /**
