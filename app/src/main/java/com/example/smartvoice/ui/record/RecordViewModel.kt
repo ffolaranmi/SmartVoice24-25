@@ -1,5 +1,7 @@
 package com.example.smartvoice.ui.record
 
+
+import com.example.smartvoice.data.User
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartvoice.SmartVoiceApplication
@@ -46,4 +48,11 @@ class RecordViewModel(private val smartVoiceDatabase: SmartVoiceDatabase) : View
             }
         }
     }
+
+    suspend fun getCurrentUser(): User? {
+        return withContext(Dispatchers.IO) {
+            smartVoiceDatabase.userDao().getUser()
+        }
+    }
+
 }

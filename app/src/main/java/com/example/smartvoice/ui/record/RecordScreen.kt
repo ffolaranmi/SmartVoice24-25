@@ -1,76 +1,27 @@
 package com.example.smartvoice.ui.record
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartvoice.R
 import com.example.smartvoice.SmartVoiceTopAppBar
-import com.example.smartvoice.ui.AppViewModelProvider
+import com.example.smartvoice.data.DiagnosisTable
 import com.example.smartvoice.ui.History.HistoryDestination
 import com.example.smartvoice.ui.navigation.NavigationDestination
-import androidx.compose.foundation.background
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.*
-import androidx.activity.ComponentActivity
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.smartvoice.SmartVoiceTopAppBar
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.smartvoice.SmartVoiceTopAppBar
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.smartvoice.SmartVoiceTopAppBar
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.remember
-//import androidx.activity.compose.rememberPermissionState
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.smartvoice.data.DiagnosisDao
-import com.example.smartvoice.data.DiagnosisTable
-import java.io.File
-import java.io.FileWriter
-import java.util.Date
-
-// Request code for external storage permission
-const val PERMISSION_REQUEST_CODE = 100
+import java.text.SimpleDateFormat
+import java.util.*
 
 object RecordDestination : NavigationDestination {
     override val route = "Record"
@@ -82,25 +33,10 @@ fun RecordScreen(
     navigateToScreenOption: (NavigationDestination) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModelFactory: ViewModelProvider.Factory, // Pass ViewModelFactory explicitly
-    /*navigateToScreenOption = navigateToScreenOption,
-    navigateBack = navigateBack,
-    modifier = modifier,
-    viewModelFactory = viewModelFactory,
-    diagnosisDao = diagnosisDao // Pass diagnosisDao explicitly */
-){
-    val viewModel = viewModel<RecordViewModel>(factory = viewModelFactory) // Use the provided factory
-    val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // Permission is granted, start recording
-                viewModel.startRecording()
-            } else {
-                // Handle denied permission
-            }
-        }
-
-    val permissionState by rememberUpdatedState(newValue = requestPermissionLauncher)
+    viewModelFactory: ViewModelProvider.Factory
+) {
+    val viewModel = viewModel<RecordViewModel>(factory = viewModelFactory)
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -110,13 +46,11 @@ fun RecordScreen(
                 navigateUp = navigateBack,
             )
         }
-    ) { innerpadding ->
+    ) { innerPadding ->
         RecordBody(
             onScreenOptionClick = navigateToScreenOption,
-            modifier = modifier.padding(innerpadding),
-            viewModel = viewModel,
-            //context = context, // Pass the context down to RecordBody
-            //permissionState = permissionState
+            modifier = modifier.padding(innerPadding),
+            viewModel = viewModel
         )
     }
 }
@@ -126,20 +60,19 @@ private fun RecordBody(
     onScreenOptionClick: (NavigationDestination) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RecordViewModel,
-    //context: Context, // Add this parameter
-    //permissionState: PermissionState
 ) {
-    var isClicked by remember { mutableStateOf(false) }
-    var originalColor by remember { mutableStateOf(Color.Blue) }
-    var currentColor by remember { mutableStateOf(originalColor) }
-
     val coroutineScope = rememberCoroutineScope()
+    var isRecording by remember { mutableStateOf(false) }
+    var buttonColor by remember { mutableStateOf(Color.Blue) }
 
-    fun changeColorForThreeSeconds() {
+    fun startRecordingWithEffect() {
         coroutineScope.launch {
-            currentColor = Color.Red
+            isRecording = true
+            buttonColor = Color.Red
+            viewModel.startRecording()
             delay(3000)
-            currentColor = originalColor
+            isRecording = false
+            buttonColor = Color.Blue
         }
     }
 
@@ -157,15 +90,11 @@ private fun RecordBody(
         )
 
         Button(
-            onClick = {
-                isClicked = !isClicked
-                currentColor = if (isClicked) Color.Red else originalColor
-                changeColorForThreeSeconds()
-            },
+            onClick = { startRecordingWithEffect() },
             modifier = Modifier
                 .widthIn(min = 275.dp)
                 .padding(16.dp)
-                .background(currentColor)
+                .background(buttonColor)
         ) {
             Text(
                 text = stringResource(id = R.string.record),
@@ -176,30 +105,33 @@ private fun RecordBody(
 
         Button(
             onClick = {
-                    val patientName: String = "Patient McPatientFace"
-                    val patientChi: String = "1234567891"
-                    val diagnosis: String = "You have RRP"
-                    val recordingDate: String = "2022-12-13" // Use current date
-                    val recordingLength: String = "01:12"
+                coroutineScope.launch {
+                    val currentUser = viewModel.getCurrentUser()
+                    val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
 
-                    // Insert values into the database
-                    val diagnosisTable = DiagnosisTable(
-                        patientchi = patientChi,
-                        patientName = patientName,
-                        diagnosis = diagnosis,
-                        recordingDate = recordingDate,
-                        recordingLength = recordingLength
-                    )
-                    viewModel.insertDiagnosis(diagnosisTable) // Call ViewModel function to insert into database
-                },
-                modifier = modifier.widthIn(min = 275.dp),
-                enabled = true,
-                )  {
+                    if (currentUser != null) {
+                        val diagnosisTable = DiagnosisTable(
+                            patientchi = currentUser.chinum,
+                            patientName = currentUser.patientName,
+                            diagnosis = "You have RRP",  // You can make this dynamic later
+                            recordingDate = currentDateTime,
+                            recordingLength = "00:03" // Optional placeholder
+                        )
+
+                        viewModel.insertDiagnosis(diagnosisTable)
+                    } else {
+                        // Optional: Show feedback that user data was not found
+                    }
+                }
+            },
+            modifier = modifier.widthIn(min = 275.dp)
+        ) {
             Text(
                 text = "Save voice sample",
                 style = MaterialTheme.typography.h6,
             )
         }
+
 
         Button(
             onClick = { onScreenOptionClick(HistoryDestination) },

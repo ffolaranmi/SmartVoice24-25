@@ -2,12 +2,16 @@ package com.example.smartvoice.ui.home
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.example.smartvoice.R
 import com.example.smartvoice.SmartVoiceTopAppBar
@@ -21,10 +25,21 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
+object AccountInfoDestination : NavigationDestination {
+    override val route = "accountInfo"
+    override val titleRes = R.string.account_information
+}
+
+object FindMedicalHelpDestination : NavigationDestination {
+    override val route = "findMedicalHelp"
+    override val titleRes = R.string.find_medical_help
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToScreenOption: (NavigationDestination) -> Unit,
-    navigateToLogin: () -> Unit,  // ✅ Added logout navigation
+    navigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
     viewModelFactory: ViewModelProvider.Factory,
 ) {
@@ -41,24 +56,33 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween, // ✅ Pushes logout button to bottom
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.weight(1f), // ✅ Ensures buttons take up space above
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                statusBar()
-                buttonList(onScreenOptionClick = navigateToScreenOption)
+                Text(
+                    text = "WELCOME TO SMARTVOICE!",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.padding(12.dp)
+                )
+
+                buttonList(navigateToScreenOption)
             }
 
-            // ✅ Logout button at the bottom
             LogoutButton(navigateToLogin)
         }
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun buttonList(
     onScreenOptionClick: (NavigationDestination) -> Unit,
@@ -66,28 +90,35 @@ private fun buttonList(
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         buttonList.forEach {
-            Button(
-                onClick = { onScreenOptionClick(it.buttonRoute) },
-                modifier = Modifier.widthIn(min = 275.dp)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xEDE6EAF8)), // soft lilac
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                shape = RoundedCornerShape(22.dp),
+                onClick = { onScreenOptionClick(it.buttonRoute) }
             ) {
-                Text(
-                    text = stringResource(id = it.buttonStringId),
-                    style = MaterialTheme.typography.h6
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(id = it.buttonStringId).uppercase(),
+                        color = Color(0xFF5E35B1), // deep purple
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
             }
         }
     }
 }
 
-@Composable
-private fun statusBar(modifier: Modifier = Modifier) {
-    Column {
-        Text(text = "Status", style = MaterialTheme.typography.h4)
-        Text(text = "Analysis Pending...", style = MaterialTheme.typography.h6)
-    }
-}
 
-// ✅ New Logout Button Component
 @Composable
 fun LogoutButton(navigateToLogin: () -> Unit) {
     Button(
@@ -95,19 +126,19 @@ fun LogoutButton(navigateToLogin: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)),
+        shape = RoundedCornerShape(50.dp)
     ) {
-        Text("Logout", style = MaterialTheme.typography.h6)
+        Text("Logout", style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
     }
 }
 
-// Define Button List
 private data class ButtonHeader(@StringRes val buttonStringId: Int, val buttonRoute: NavigationDestination)
 
 private val buttonList = listOf(
-    ButtonHeader(buttonStringId = R.string.account_information, buttonRoute = HistoryDestination),
+    ButtonHeader(buttonStringId = R.string.account_information, buttonRoute = AccountInfoDestination),
     ButtonHeader(buttonStringId = R.string.record, buttonRoute = RecordDestination),
     ButtonHeader(buttonStringId = R.string.history, buttonRoute = HistoryDestination),
-    ButtonHeader(buttonStringId = R.string.find_medical_help, buttonRoute = HistoryDestination),
+    ButtonHeader(buttonStringId = R.string.find_medical_help, buttonRoute = FindMedicalHelpDestination),
     ButtonHeader(buttonStringId = R.string.what_is_smartvoice, buttonRoute = AboutDestination)
 )

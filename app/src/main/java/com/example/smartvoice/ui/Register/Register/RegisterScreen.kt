@@ -13,17 +13,23 @@ import com.example.smartvoice.SmartVoiceApplication
 import com.example.smartvoice.data.SmartVoiceDatabase
 import com.example.smartvoice.ui.AppViewModelProvider
 
+fun isPasswordStrong(password: String): Boolean {
+    val hasNumber = password.any { it.isDigit() }
+    val hasSymbol = password.any { !it.isLetterOrDigit() }
+    return password.length >= 8 && hasNumber && hasSymbol
+}
+
 @Composable
 fun RegisterScreen(
     navigateToLogin: () -> Unit,
     application: SmartVoiceApplication,
-    database: SmartVoiceDatabase, // ✅ Ensure database is passed
+    database: SmartVoiceDatabase,
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = viewModel(factory = AppViewModelProvider.Factory(application)) // ✅ Fix ViewModel instantiation
+    viewModel: RegisterViewModel = viewModel(factory = AppViewModelProvider.Factory(application))
 ) {
-    var chinum by remember { mutableStateOf("") }
     var patientName by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
+    var chinum by remember { mutableStateOf("") }
     var currentStatus by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -37,11 +43,11 @@ fun RegisterScreen(
     ) {
         Text("Register", style = MaterialTheme.typography.h4, modifier = Modifier.padding(16.dp))
 
-        OutlinedTextField(value = chinum, onValueChange = { chinum = it }, label = { Text("CHI Number") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
-
-        OutlinedTextField(value = patientName, onValueChange = { patientName = it }, label = { Text("Patient Name") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = patientName, onValueChange = { patientName = it }, label = { Text("Patient Full Name") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
 
         OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Age") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
+
+        OutlinedTextField(value = chinum, onValueChange = { chinum = it }, label = { Text("CHI Number") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
 
         OutlinedTextField(value = currentStatus, onValueChange = { currentStatus = it }, label = { Text("Current Status") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
 
@@ -59,6 +65,8 @@ fun RegisterScreen(
             onClick = {
                 if (chinum.isBlank() || patientName.isBlank() || age.isBlank() || currentStatus.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                     errorMessage = "All fields are required!"
+                } else if (!isPasswordStrong(password)) {
+                    errorMessage = "Password must be at least 8 characters long, include a number and a symbol!"
                 } else if (password != confirmPassword) {
                     errorMessage = "Passwords do not match!"
                 } else {
@@ -68,7 +76,7 @@ fun RegisterScreen(
                     } else {
                         viewModel.registerUser(chinum, patientName, ageInt, currentStatus, email, password) { success ->
                             if (success) {
-                                navigateToLogin() // ✅ Navigate only if registration is successful
+                                navigateToLogin()
                             } else {
                                 errorMessage = "Registration failed. Please try again."
                             }

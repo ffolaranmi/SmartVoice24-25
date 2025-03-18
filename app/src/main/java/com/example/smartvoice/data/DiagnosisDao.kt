@@ -9,6 +9,14 @@ interface DiagnosisDao {
     @Insert
     suspend fun insertNewDiagnosis(entity: DiagnosisTable)
 
-    @Query("SELECT * FROM diagnosis")
+    @Query("SELECT * FROM diagnosis ORDER BY recordingDate DESC")
     suspend fun getAllEntities(): List<DiagnosisTable>
+
+    @Query("DELETE FROM diagnosis")
+    suspend fun clearAll()
+
+    @Query("DELETE FROM diagnosis")
+    suspend fun clearAllDiagnoses()
+
+
 }

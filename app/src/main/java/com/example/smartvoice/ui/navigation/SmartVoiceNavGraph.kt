@@ -10,6 +10,9 @@ import com.example.smartvoice.data.SmartVoiceDatabase
 import com.example.smartvoice.ui.AppViewModelProvider
 import com.example.smartvoice.ui.History.HistoryScreen
 import com.example.smartvoice.ui.about.AboutScreen
+import com.example.smartvoice.ui.account.AccountInfoScreen
+import com.example.smartvoice.ui.help.FindMedicalHelpScreen
+import com.example.smartvoice.ui.home.AccountInfoDestination
 import com.example.smartvoice.ui.home.HomeScreen
 import com.example.smartvoice.ui.login.LoginScreen
 import com.example.smartvoice.ui.record.RecordScreen
@@ -19,7 +22,7 @@ import com.example.smartvoice.ui.register.RegisterScreen
 fun SmartVoiceNavHost(
     navController: NavHostController,
     application: SmartVoiceApplication,
-    database: SmartVoiceDatabase, // ✅ Ensure database is passed
+    database: SmartVoiceDatabase,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -27,17 +30,15 @@ fun SmartVoiceNavHost(
         startDestination = "login",
         modifier = modifier
     ) {
-        // ✅ LOGIN SCREEN
         composable("login") {
             LoginScreen(
                 navigateToScreenOption = { navController.navigate("home") },
                 navigateToRegister = { navController.navigate("register") },
-                application = application, // ✅ Fix: Only pass application
+                application = application,
                 database = application.smartVoiceDatabase
             )
         }
 
-        // ✅ REGISTER SCREEN
         composable("register") {
             RegisterScreen(
                 navigateToLogin = { navController.navigate("login") },
@@ -46,7 +47,6 @@ fun SmartVoiceNavHost(
             )
         }
 
-        // ✅ HOME SCREEN
         composable("home") {
             HomeScreen(
                 navigateToScreenOption = { navController.navigate(it.route) },
@@ -55,11 +55,10 @@ fun SmartVoiceNavHost(
                         popUpTo("home") { inclusive = true }
                     }
                 },
-                viewModelFactory = AppViewModelProvider.Factory(application) // ✅ Ensure ViewModelFactory uses database
+                viewModelFactory = AppViewModelProvider.Factory(application)
             )
         }
 
-        // ✅ HISTORY SCREEN
         composable("history") {
             HistoryScreen(
                 navigateBack = { navController.popBackStack() },
@@ -67,7 +66,6 @@ fun SmartVoiceNavHost(
             )
         }
 
-        // ✅ RECORD SCREEN
         composable("record") {
             RecordScreen(
                 navigateToScreenOption = { navController.navigate(it.route) },
@@ -76,12 +74,30 @@ fun SmartVoiceNavHost(
             )
         }
 
-        // ✅ ABOUT SCREEN
         composable("about") {
             AboutScreen(
                 navigateToScreenOption = { navController.navigate(it.route) },
                 navigateBack = { navController.popBackStack() }
             )
         }
+
+        composable(AccountInfoDestination.route) {
+            AccountInfoScreen(
+                database = database,
+                navController = navController,
+                navigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("findMedicalHelp") {
+            FindMedicalHelpScreen(
+                navigateBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }
