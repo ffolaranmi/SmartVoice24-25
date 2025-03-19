@@ -23,6 +23,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.random.Random
+
+fun generateRandomPercentage(): Int {
+    return Random.nextInt(0, 101) // Generates a random integer between 0 and 100
+}
 
 object RecordDestination : NavigationDestination {
     override val route = "Record"
@@ -111,13 +116,15 @@ fun RecordScreen(
                     coroutineScope.launch {
                         val currentUser = viewModel.getCurrentUser()
                         val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+                        val randomPercentage = generateRandomPercentage()
                         val diagnosisTable = com.example.smartvoice.data.DiagnosisTable(
                             patientchi = currentUser?.chinum ?: "Unknown",
                             patientName = currentUser?.patientName ?: "Unknown",
-                            diagnosis = "You have RRP",
+                            diagnosis = "You have $randomPercentage% of having RRP",
                             recordingDate = currentDateTime,
                             recordingLength = "00:03"
                         )
+
                         viewModel.insertDiagnosis(diagnosisTable)
                     }
                 },

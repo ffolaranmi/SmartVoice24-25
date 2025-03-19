@@ -86,8 +86,9 @@ fun HistoryScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(diagnoses) { diagnosis ->
-                    VoiceSampleBubble(
+                items(diagnoses.reversed()) { diagnosis ->
+
+                VoiceSampleBubble(
                         recordingDate = diagnosis.recordingDate,
                         patientName = diagnosis.patientName,
                         diagnosis = diagnosis.diagnosis
