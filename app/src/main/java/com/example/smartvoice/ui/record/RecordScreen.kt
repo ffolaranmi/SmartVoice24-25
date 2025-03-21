@@ -26,7 +26,7 @@ import java.util.*
 import kotlin.random.Random
 
 fun generateRandomPercentage(): Int {
-    return Random.nextInt(0, 101) // Generates a random integer between 0 and 100
+    return Random.nextInt(0, 101)
 }
 
 object RecordDestination : NavigationDestination {
@@ -46,10 +46,16 @@ fun RecordScreen(
 
     var isRecording by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf(0f) }
+    var showDialog by remember { mutableStateOf(false) }
+    var lastRecordedDiagnosis by remember { mutableStateOf<String?>(null) }
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = tween(durationMillis = 3000, easing = LinearEasing)
+        animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
+        finishedListener = {
+            showDialog = true
+            isRecording = false
+        }
     )
 
     LaunchedEffect(isRecording) {
@@ -59,7 +65,6 @@ fun RecordScreen(
                 delay(30)
             }
             viewModel.stopRecording()
-            isRecording = false
         } else {
             progress = 0f
         }
@@ -88,7 +93,6 @@ fun RecordScreen(
                 modifier = modifier.padding(16.dp)
             )
 
-            // ✅ Water Cup Animation
             CupWithWater(progress = animatedProgress)
 
             Button(
@@ -120,16 +124,17 @@ fun RecordScreen(
                         val diagnosisTable = com.example.smartvoice.data.DiagnosisTable(
                             patientchi = currentUser?.chinum ?: "Unknown",
                             patientName = currentUser?.patientName ?: "Unknown",
-                            diagnosis = "$randomPercentage", //used to be "you have $randomPercentage% of RRP"
+                            diagnosis = "$randomPercentage%",
                             recordingDate = currentDateTime,
                             recordingLength = "00:03"
                         )
 
                         viewModel.insertDiagnosis(diagnosisTable)
+                        lastRecordedDiagnosis = "$randomPercentage%"
                     }
                 },
                 modifier = modifier.widthIn(min = 275.dp),
-                enabled = !isRecording
+                enabled = lastRecordedDiagnosis == null // Prevent saving if no recording
             ) {
                 Text(
                     text = "Save voice sample",
@@ -147,6 +152,19 @@ fun RecordScreen(
                 )
             }
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Recording Finished") },
+            text = { Text("Your recording has been successfully completed.") },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
