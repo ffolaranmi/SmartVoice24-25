@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
@@ -19,8 +21,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartvoice.R
 import com.example.smartvoice.SmartVoiceTopAppBar
+import com.example.smartvoice.data.Classification
 import com.example.smartvoice.data.DiagnosisTable
 import com.example.smartvoice.ui.navigation.NavigationDestination
+import androidx.compose.foundation.clickable
 
 object HistoryDestination : NavigationDestination {
     override val route = "History"
@@ -88,7 +92,7 @@ fun HistoryScreen(
             ) {
                 items(diagnoses.reversed()) { diagnosis ->
 
-                VoiceSampleBubble(
+                    VoiceSampleBubble(
                         recordingDate = diagnosis.recordingDate,
                         patientName = diagnosis.patientName,
                         diagnosis = diagnosis.diagnosis
@@ -105,12 +109,15 @@ fun VoiceSampleBubble(
     patientName: String,
     diagnosis: String
 ) {
+    val showDialog = remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable { showDialog.value = true }, // Open dialog on click
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)) // This is a perfect soft lilac
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)) // Soft lilac
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
@@ -127,7 +134,7 @@ fun VoiceSampleBubble(
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(
-                text = diagnosis,
+                text = "You have $diagnosis% chance of having RRP",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color.Black,
@@ -135,7 +142,40 @@ fun VoiceSampleBubble(
             )
         }
     }
+
+    // Show dialog when showDialog is true
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog.value = false }) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Diagnosis Details") },
+            text = {
+                Column {
+                    Text(text = "Patient Name: $patientName", fontWeight = FontWeight.Bold)
+                    Text(text = "Date: $recordingDate", fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "You have a $diagnosis% chance of having RRP")
+
+
+                    val diagnosisValue = diagnosis.toIntOrNull()
+
+                    if (diagnosisValue != null) {
+                        if (diagnosisValue >= 50) {
+                            Text("This means you have a HIGH risk of having RRP.")
+                            Text("It is recommended you contact your gp or contact 111 for further medical advice.")
+                        } else {
+                            Text("This means you have a low risk of having RRP.")
+                            Text("It's unlikely you need any medical assistance, but if you still have concerns visit the Medical help page on the app.")
+                        }
+                    } else {
+                        Text("Invalid diagnosis value: $diagnosis")
+                    }
+                }
+            }
+        )
+    }
 }
-
-
-

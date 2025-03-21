@@ -120,7 +120,7 @@ fun RecordScreen(
                         val diagnosisTable = com.example.smartvoice.data.DiagnosisTable(
                             patientchi = currentUser?.chinum ?: "Unknown",
                             patientName = currentUser?.patientName ?: "Unknown",
-                            diagnosis = "You have $randomPercentage% of having RRP",
+                            diagnosis = "$randomPercentage", //used to be "you have $randomPercentage% of RRP"
                             recordingDate = currentDateTime,
                             recordingLength = "00:03"
                         )
