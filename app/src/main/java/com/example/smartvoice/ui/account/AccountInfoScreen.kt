@@ -72,11 +72,11 @@ fun AccountInfoScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                InfoTile(label = "PATIENT FULL NAME", value = u.patientName)
-                InfoTile(label = "AGE", value = u.age.toString())
-                InfoTile(label = "CHI NUMBER", value = u.chinum)
-                InfoTile(label = "CURRENT STATUS", value = u.currentstatus)
-                InfoTile(label = "EMAIL", value = u.email)
+                InfoTile(label = "CHILD'S FULL NAME", value = u.patientName)
+                InfoTile(label = "CHILD'S AGE", value = u.age.toString())
+                InfoTile(label = "CHILD'S CHI NUMBER", value = u.chinum)
+                InfoTile(label = "PARENT'S NAME", value = u.currentstatus)
+                InfoTile(label = "PARENT'S EMAIL", value = u.email)
 
                 Spacer(modifier = Modifier.height(24.dp))
 

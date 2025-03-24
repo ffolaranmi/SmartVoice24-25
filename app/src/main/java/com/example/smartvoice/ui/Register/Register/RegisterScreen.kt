@@ -43,15 +43,15 @@ fun RegisterScreen(
     ) {
         Text("Register", style = MaterialTheme.typography.h4, modifier = Modifier.padding(16.dp))
 
-        OutlinedTextField(value = patientName, onValueChange = { patientName = it }, label = { Text("Patient Full Name") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = patientName, onValueChange = { patientName = it }, label = { Text("Child Full Name") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
 
-        OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Age") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Child's Age") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
 
-        OutlinedTextField(value = chinum, onValueChange = { chinum = it }, label = { Text("CHI Number") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = chinum, onValueChange = { chinum = it }, label = { Text("Child's CHI Number") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth().padding(8.dp))
 
-        OutlinedTextField(value = currentStatus, onValueChange = { currentStatus = it }, label = { Text("Current Status") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = currentStatus, onValueChange = { currentStatus = it }, label = { Text("Parent's Name") }, modifier = Modifier.fillMaxWidth().padding(8.dp))
 
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email), modifier = Modifier.fillMaxWidth().padding(8.dp))
+        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text(" Parent's Email") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email), modifier = Modifier.fillMaxWidth().padding(8.dp))
 
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().padding(8.dp))
 
