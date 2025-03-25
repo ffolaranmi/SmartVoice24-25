@@ -1,12 +1,13 @@
 package com.example.smartvoice.ui.record
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartvoice.R
@@ -43,28 +44,43 @@ fun RecordScreen(
 ) {
     val viewModel = viewModel<RecordViewModel>(factory = viewModelFactory)
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var isRecording by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf(0f) }
-    var showDialog by remember { mutableStateOf(false) }
-    var lastRecordedDiagnosis by remember { mutableStateOf<String?>(null) }
+    var hasRecorded by remember { mutableStateOf(false) }
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
-        finishedListener = {
-            showDialog = true
-            isRecording = false
-        }
+        label = "progressAnim"
     )
 
     LaunchedEffect(isRecording) {
         if (isRecording) {
+            viewModel.startRecording()
             for (i in 0..100) {
                 progress = i / 100f
                 delay(30)
             }
             viewModel.stopRecording()
+            isRecording = false
+            hasRecorded = true
+
+            coroutineScope.launch {
+                val currentUser = viewModel.getCurrentUser()
+                val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+                val randomPercentage = generateRandomPercentage()
+                val diagnosisTable = com.example.smartvoice.data.DiagnosisTable(
+                    patientchi = currentUser?.chinum ?: "Unknown",
+                    patientName = currentUser?.patientName ?: "Unknown",
+                    diagnosis = "$randomPercentage",
+                    recordingDate = currentDateTime,
+                    recordingLength = "00:03"
+                )
+                viewModel.insertDiagnosis(diagnosisTable)
+                Toast.makeText(context, "Recording saved successfully", Toast.LENGTH_SHORT).show()
+            }
         } else {
             progress = 0f
         }
@@ -73,7 +89,7 @@ fun RecordScreen(
     Scaffold(
         topBar = {
             SmartVoiceTopAppBar(
-                title = stringResource(id = RecordDestination.titleRes),
+                title = "Record",
                 canNavigateBack = true,
                 navigateUp = navigateBack,
             )
@@ -99,7 +115,6 @@ fun RecordScreen(
                 onClick = {
                     if (!isRecording) {
                         coroutineScope.launch {
-                            viewModel.startRecording()
                             isRecording = true
                         }
                     }
@@ -109,36 +124,9 @@ fun RecordScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = if (isRecording) "Recording..." else stringResource(id = R.string.record),
+                    text = if (isRecording) "Recording..." else "Start Recording",
                     style = MaterialTheme.typography.h6,
                     color = Color.White
-                )
-            }
-
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        val currentUser = viewModel.getCurrentUser()
-                        val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-                        val randomPercentage = generateRandomPercentage()
-                        val diagnosisTable = com.example.smartvoice.data.DiagnosisTable(
-                            patientchi = currentUser?.chinum ?: "Unknown",
-                            patientName = currentUser?.patientName ?: "Unknown",
-                            diagnosis = "$randomPercentage%",
-                            recordingDate = currentDateTime,
-                            recordingLength = "00:03"
-                        )
-
-                        viewModel.insertDiagnosis(diagnosisTable)
-                        lastRecordedDiagnosis = "$randomPercentage%"
-                    }
-                },
-                modifier = modifier.widthIn(min = 275.dp),
-                enabled = lastRecordedDiagnosis == null // Prevent saving if no recording
-            ) {
-                Text(
-                    text = "Save voice sample",
-                    style = MaterialTheme.typography.h6,
                 )
             }
 
@@ -147,24 +135,11 @@ fun RecordScreen(
                 modifier = modifier.widthIn(min = 275.dp),
             ) {
                 Text(
-                    text = stringResource(id = HistoryDestination.titleRes),
+                    text = "History",
                     style = MaterialTheme.typography.h6,
                 )
             }
         }
-    }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Recording Finished") },
-            text = { Text("Your recording has been successfully completed.") },
-            confirmButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("OK")
-                }
-            }
-        )
     }
 }
 
