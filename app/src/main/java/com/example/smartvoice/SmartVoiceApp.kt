@@ -20,13 +20,13 @@ import com.example.smartvoice.data.SmartVoiceDatabase
 @Composable
 fun SmartVoiceApp(
     application: SmartVoiceApplication,
-    database: SmartVoiceDatabase, // ✅ Ensure database is passed
+    database: SmartVoiceDatabase, // Ensure database is passed
     navController: NavHostController = rememberNavController()
 ) {
     SmartVoiceNavHost(
         navController = navController,
         application = application,
-        database = database // ✅ Fix: Pass database
+        database = database // Fix: Pass database
     )
 }
 
@@ -58,4 +58,5 @@ fun SmartVoiceTopAppBar(
     }
 }
 
-// hello
+// hello :)
+// btw you gotta change the gradle version to JDK 17 JetbBrains Runtime for this app to run properly

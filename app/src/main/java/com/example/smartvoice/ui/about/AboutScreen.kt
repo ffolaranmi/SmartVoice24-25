@@ -22,7 +22,6 @@ object AboutDestination : NavigationDestination {
 fun AboutScreen(
     navigateToScreenOption: (NavigationDestination) -> Unit,
     modifier:  Modifier = Modifier,
-    //viewModel: AboutViewModel = viewModel(/*factory = AppViewModelProvider.Factory*/),
     navigateBack: () -> Unit,
 ){
     Scaffold(
@@ -52,7 +51,7 @@ private fun AboutBody(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        //Image(painter = /*idk what to put here i think image name but will have to add later once i figure out how to store that*/)
+
         Text(
             text ="The objective of Smart Voice is to create a smart phone application that can identify and diagnose recurrent respiratory papilloma (RRP) disease.  RRP is a condition that is characterized by the presence of wart like growths called papilloma in the respiratory retract which causes problems for the airway to function properly. \n" +
                     "\n" +

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-// healthy, functional, structural, neurological
+
 enum class Classification {
     HEALTHY,
     FUNCTIONAL,

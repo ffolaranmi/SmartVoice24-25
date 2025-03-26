@@ -8,14 +8,14 @@ import androidx.room.Delete
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE) // ✅ Prevents duplicate users by replacing conflicts
+    @Insert(onConflict = OnConflictStrategy.REPLACE) // Prevents duplicate users by replacing conflicts
     suspend fun insert(entity: User)
 
     @Query("SELECT * FROM user WHERE email = :email AND password = :password LIMIT 1")
-    suspend fun getUserByEmailAndPassword(email: String, password: String): User?  // ✅ Allows login validation
+    suspend fun getUserByEmailAndPassword(email: String, password: String): User?  // Allows login validation
 
     @Query("SELECT COUNT(*) FROM user WHERE email = :email")
-    suspend fun checkIfEmailExists(email: String): Int  // ✅ Checks if an email is already registered
+    suspend fun checkIfEmailExists(email: String): Int  // Checks if an email is already registered
 
     @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
     suspend fun getUserByEmail(email: String): User?

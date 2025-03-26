@@ -16,17 +16,17 @@ class RegisterViewModel(private val database: SmartVoiceDatabase) : ViewModel() 
         currentStatus: String,
         email: String,
         password: String,
-        onResult: (Boolean) -> Unit // ✅ Callback to notify success/failure
+        onResult: (Boolean) -> Unit // Callback to notify success/failure
     ) {
         if (chinum.isBlank() || patientName.isBlank() || currentStatus.isBlank() || email.isBlank() || password.isBlank()) {
             Log.e("RegisterViewModel", "Error: One or more fields are empty.")
-            onResult(false) // ❌ Fail if any field is blank
+            onResult(false) // Fail if any field is blank
             return
         }
 
         if (age <= 0) {
             Log.e("RegisterViewModel", "Error: Age must be a positive number.")
-            onResult(false) // ❌ Fail if age is not valid
+            onResult(false) // Fail if age is not valid
             return
         }
 
@@ -41,13 +41,13 @@ class RegisterViewModel(private val database: SmartVoiceDatabase) : ViewModel() 
                     password = password
                 )
 
-                database.userDao().insert(newUser) // ✅ Insert into Room Database
-                Log.d("RegisterViewModel", "✅ User registered successfully: $newUser")
-                onResult(true) // ✅ Success
+                database.userDao().insert(newUser) // Insert into Room Database
+                Log.d("RegisterViewModel", "User registered successfully: $newUser")
+                onResult(true) // Success
 
             } catch (e: Exception) {
-                Log.e("RegisterViewModel", "❌ Error registering user", e)
-                onResult(false) // ❌ Fail on exception
+                Log.e("RegisterViewModel", "Error registering user", e)
+                onResult(false) // Fail on exception
             }
         }
     }

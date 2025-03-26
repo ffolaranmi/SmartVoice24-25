@@ -10,12 +10,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val application = application as SmartVoiceApplication
-        val database = application.smartVoiceDatabase // ✅ Get database instance
+        val database = application.smartVoiceDatabase // Get database instance
 
         setContent {
             SmartVoiceTheme {
-                SmartVoiceApp(application = application, database = database) // ✅ Ensure database is passed
+                SmartVoiceApp(application = application, database = database) // Ensure database is passed
             }
         }
     }
 }
+
+// btw you gotta change the gradle version to JDK 17 JetbBrains Runtime for this app to run properly

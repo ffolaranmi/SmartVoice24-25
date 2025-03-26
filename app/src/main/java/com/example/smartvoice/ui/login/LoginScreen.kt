@@ -34,7 +34,7 @@ fun LoginScreen(
 ) {
     Scaffold { innerPadding ->
         LoginBody(
-            onLoginSuccess = { navigateToScreenOption("home") }, // ✅ Pass home route
+            onLoginSuccess = { navigateToScreenOption("home") }, // Pass home route
             onRegisterClick = navigateToRegister,
             viewModel = viewModel,
             modifier = modifier.padding(innerPadding)

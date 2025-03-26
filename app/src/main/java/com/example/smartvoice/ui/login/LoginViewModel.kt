@@ -10,7 +10,7 @@ class LoginViewModel(private val database: SmartVoiceDatabase) : ViewModel() {
     fun loginUser(email: String, password: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val user = database.userDao().getUserByEmailAndPassword(email, password)
-            onResult(user != null)  // ✅ Returns true if user exists, false otherwise
+            onResult(user != null)  // Returns true if user exists, false otherwise
         }
     }
 }

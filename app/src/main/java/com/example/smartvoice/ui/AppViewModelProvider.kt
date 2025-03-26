@@ -15,12 +15,12 @@ import com.example.smartvoice.ui.register.RegisterViewModel
 object AppViewModelProvider {
     fun Factory(application: SmartVoiceApplication): ViewModelProvider.Factory =
         viewModelFactory {
-            val database = application.smartVoiceDatabase // ✅ Retrieve database inside the factory
+            val database = application.smartVoiceDatabase // Retrieve database inside the factory
 
             initializer { HomeViewModel() }
             initializer { HistoryViewModel(database) }
             initializer { RecordViewModel(database) }
             initializer { LoginViewModel(database) }
-            initializer { RegisterViewModel(database) } // ✅ Pass database internally
+            initializer { RegisterViewModel(database) } // Pass database internally
         }
 }
