@@ -134,7 +134,7 @@ fun VoiceSampleBubble(
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(
-                text = "You have $diagnosis% chance of having RRP",
+                text = "Your child has a $diagnosis% chance of having RRP",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color.Black,
@@ -158,18 +158,18 @@ fun VoiceSampleBubble(
                     Text(text = "Patient Name: $patientName", fontWeight = FontWeight.Bold)
                     Text(text = "Date: $recordingDate", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "You have a $diagnosis% chance of having RRP")
+                    Text(text = "Your child has a $diagnosis% chance of having RRP")
 
 
                     val diagnosisValue = diagnosis.toIntOrNull()
 
                     if (diagnosisValue != null) {
                         if (diagnosisValue >= 50) {
-                            Text("This means you have a HIGH risk of having RRP.")
-                            Text("It is recommended you contact your gp or contact 111 for further medical advice.")
+                            Text("This means your child has a HIGH risk of having RRP.")
+                            Text("It is recommended you contact the child's gp or contact 111 for further medical advice.")
                         } else {
-                            Text("This means you have a low risk of having RRP.")
-                            Text("It's unlikely you need any medical assistance, but if you still have concerns visit the Medical help page on the app.")
+                            Text("This means your child has a low risk of having RRP.")
+                            Text("It's unlikely your child needs any medical assistance, but if you still have concerns visit the Medical help page on the app.")
                         }
                     } else {
                         Text("Invalid diagnosis value: $diagnosis")
